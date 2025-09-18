@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lojistas  Lojista[]
+
+  @@map("users")
+}
+
+model Lojista {
+  id          Int      @id @default(autoincrement())
+  nome        String
+  email       String   @unique
+  telefone    String?
+  endereco    String?
+  cidade      String?
+  estado      String?
+  cep         String?
+  plano       String   @default("basico") // basico, premium
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  produtos    Produto[]
+  pedidos     Pedido[]
+  userId      Int         // 🔑 vincula com o usuário
+  user        User        @relation(fields: [userId], references: [id])
+
+  @@map("lojistas")
+}
+
+model Produto {
+  id          Int      @id @default(autoincrement())
+  nome        String
+  descricao   String?
+  preco       Decimal  @db.Decimal(10, 2)
+  categoria   String
+  tamanhos    String[] // Array de tamanhos disponíveis
+  cores       String[] // Array de cores disponíveis
+  imagens     String[] // URLs das imagens
+  estoque     Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  lojistaId   Int
+  lojista     Lojista  @relation(fields: [lojistaId], references: [id], onDelete: Cascade)
+  itensPedido ItemPedido[]
+
+  @@map("produtos")
+}
+
+model Pedido {
+  id              Int      @id @default(autoincrement())
+  numeroVenda     String   @unique
+  clienteNome     String
+  clienteEmail    String
+  clienteTelefone String
+  clienteEndereco String?
+  valorTotal      Decimal  @db.Decimal(10, 2)
+  status          String   @default("pendente") // pendente, confirmado, enviado, entregue, cancelado
+  observacoes     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relacionamentos
+  lojistaId       Int
+  lojista         Lojista    @relation(fields: [lojistaId], references: [id], onDelete: Cascade)
+  itens           ItemPedido[]
+
+  @@map("pedidos")
+}
+
+model ItemPedido {
+  id         Int     @id @default(autoincrement())
+  quantidade Int
+  precoUnit  Decimal @db.Decimal(10, 2)
+  tamanho    String?
+  cor        String?
+  
+  // Relacionamentos
+  pedidoId   Int
+  pedido     Pedido  @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  produtoId  Int
+  produto    Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@map("itens_pedido")
+}
