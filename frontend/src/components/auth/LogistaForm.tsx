@@ -26,7 +26,7 @@ export default function LojistaForm() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:3001/lojistas", {
+      const res = await fetch("https://vitine-production.up.railway.app/lojistas", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -28,7 +28,7 @@ export default function VitrinePage() {
   const [categoria, setCategoria] = useState("todos");
 
   useEffect(() => {
-    fetch("http://localhost:3001/produtos?include=lojista")
+    fetch("https://vitine-production.up.railway.app/produtos?include=lojista")
       .then(res => res.json())
       .then((data: Produto[]) => setProdutos(data))
       .catch(err => console.error("Erro ao carregar produtos:", err));

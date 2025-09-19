@@ -36,7 +36,7 @@ export default function ProdutoDetailPage() {
 
   useEffect(() => {
     if (id) {
-      fetch(`http://localhost:3001/produtos/${id}?include=lojista`)
+      fetch(`https://vitine-production.up.railway.app/produtos/${id}?include=lojista`)
         .then(res => res.json())
         .then((data: Produto) => {
           setProduto(data);

@@ -18,7 +18,7 @@ export default function LoginForm({ switchTab }: Props) {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:3001/auth/login", {
+      const res = await fetch("https://vitine-production.up.railway.app/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -29,7 +29,7 @@ export default function LoginForm({ switchTab }: Props) {
       const data = await res.json();
 
       // Verifica lojistas
-      const lojistaRes = await fetch("http://localhost:3001/lojistas/my", {
+      const lojistaRes = await fetch("https://vitine-production.up.railway.app/lojistas/my", {
         headers: { Authorization: `Bearer ${data.token}` },
       });
 

@@ -31,7 +31,7 @@ export default function AdminProdutos() {
 
   // Carregar produtos
   useEffect(() => {
-    fetch("http://localhost:3001/produtos")
+    fetch("https://vitine-production.up.railway.app/produtos")
       .then(res => res.json())
       .then((data: Produto[]) => setProdutos(data))
       .catch(err => console.error("Erro ao carregar produtos:", err));
@@ -42,7 +42,7 @@ export default function AdminProdutos() {
     try {
       if (produtoSelecionado) {
         // Editar existente
-        const res = await fetch(`http://localhost:3001/produtos/${produtoSelecionado.id}`, {
+        const res = await fetch(`https://vitine-production.up.railway.app/produtos/${produtoSelecionado.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(produto),
@@ -53,7 +53,7 @@ export default function AdminProdutos() {
         );
       } else {
         // Criar novo
-        const res = await fetch("http://localhost:3001/produtos", {
+        const res = await fetch("https://vitine-production.up.railway.app/produtos", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(produto),
@@ -75,7 +75,7 @@ export default function AdminProdutos() {
     if (!confirm("Tem certeza que deseja excluir este produto?")) return;
 
     try {
-      await fetch(`http://localhost:3001/produtos/${id}`, { method: "DELETE" });
+      await fetch(`https://vitine-production.up.railway.app/produtos/${id}`, { method: "DELETE" });
       setProdutos(prev => prev.filter(p => p.id !== id));
       alert("Produto excluído com sucesso!");
     } catch (error) {

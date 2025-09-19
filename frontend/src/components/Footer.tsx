@@ -48,7 +48,7 @@ export default function Footer() {
               <li className="flex items-center justify-center md:justify-start gap-2">
                 <FaWhatsapp className="text-destaque" />
                 <a
-                  href="https://wa.me/5599999999999"
+                  href="https://wa.me/5562992117409"
                   target="_blank"
                   rel="noreferrer"
                   className="hover:text-destaque transition-colors"
@@ -59,7 +59,7 @@ export default function Footer() {
               <li className="flex items-center justify-center md:justify-start gap-2">
                 <FaInstagram className="text-destaque" />
                 <a
-                  href="https://instagram.com/seuinsta"
+                  href="https://www.instagram.com/l1nk_start/"
                   target="_blank"
                   rel="noreferrer"
                   className="hover:text-destaque transition-colors"
@@ -70,7 +70,7 @@ export default function Footer() {
               <li className="flex items-center justify-center md:justify-start gap-2">
                 <FaGlobe className="text-destaque" />
                 <a
-                  href="https://seudominio.com"
+                  href="https://linkstart-go.vercel.app/"
                   target="_blank"
                   rel="noreferrer"
                   className="hover:text-destaque transition-colors"
@@ -81,10 +81,10 @@ export default function Footer() {
               <li className="flex items-center justify-center md:justify-start gap-2">
                 <FaEnvelope className="text-destaque" />
                 <a
-                  href="mailto:contato@seudominio.com"
+                  href="danilocardosodemelo@gmail.com"
                   className="hover:text-destaque transition-colors"
                 >
-                  contato@seudominio.com
+                  contato@linkstart.com
                 </a>
               </li>
             </ul>

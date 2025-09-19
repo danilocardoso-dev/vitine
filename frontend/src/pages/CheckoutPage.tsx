@@ -24,7 +24,7 @@ export default function CheckoutPage() {
       })),
     };
 
-    const res = await fetch("http://localhost:3001/pedidos", {
+    const res = await fetch("https://vitine-production.up.railway.app/pedidos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(pedido),

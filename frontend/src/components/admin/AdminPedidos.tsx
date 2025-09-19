@@ -35,7 +35,7 @@ export default function AdminPedidos() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3001/pedidos")
+    fetch("https://vitine-production.up.railway.app/pedidos")
       .then(res => res.json())
       .then((data) => {
         const pedidosFormatados: Pedido[] = data.map((p: any) => ({
@@ -54,7 +54,7 @@ export default function AdminPedidos() {
   // 👈 Função para atualizar status
   const atualizarStatus = async (id: number, novoStatus: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/pedidos/${id}`, {
+      const res = await fetch(`https://vitine-production.up.railway.app/pedidos/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: novoStatus }),

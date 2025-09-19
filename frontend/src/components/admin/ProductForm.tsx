@@ -47,7 +47,7 @@ export default function ProductForm({ onSave, initialData, onCancel }: Props) {
 
   useEffect(() => {
     // Carregar lojistas para o select
-    fetch("http://localhost:3001/lojistas")
+    fetch("http://https://vitine-production.up.railway.app/lojistas")
       .then(res => {
         if (!res.ok) throw new Error('Erro ao carregar lojistas');
         return res.json();

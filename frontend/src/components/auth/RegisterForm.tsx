@@ -17,7 +17,7 @@ export default function RegisterForm({ switchTab }: Props) {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:3001/auth/register", {
+      const res = await fetch("https://vitine-production.up.railway.app/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
@@ -26,7 +26,7 @@ export default function RegisterForm({ switchTab }: Props) {
       if (!res.ok) throw new Error("Erro ao registrar usuário");
 
       // login automático
-      const loginRes = await fetch("http://localhost:3001/auth/login", {
+      const loginRes = await fetch("https://vitine-production.up.railway.app/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
