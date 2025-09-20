@@ -40,32 +40,20 @@ export default function ProductForm({ onSave, initialData, onCancel }: Props) {
     lojistaId: 0,
   });
 
-  // Estados auxiliares para inputs dinâmicos
+  // Estados auxiliares
   const [novoTamanho, setNovoTamanho] = useState("");
   const [novaCor, setNovaCor] = useState("");
-  const [novaImagem, setNovaImagem] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    // Carregar lojistas para o select
     fetch("https://vitine-production.up.railway.app/lojistas")
       .then(res => {
-        if (!res.ok) throw new Error('Erro ao carregar lojistas');
+        if (!res.ok) throw new Error("Erro ao carregar lojistas");
         return res.json();
       })
-      .then(data => {
-        if (Array.isArray(data)) {
-          setLojistas(data);
-        } else {
-          console.error('Resposta não é um array:', data);
-          setLojistas([]);
-        }
-      })
-      .catch(error => {
-        console.error('Erro ao carregar lojistas:', error);
-        setLojistas([]);
-      });
+      .then(data => Array.isArray(data) ? setLojistas(data) : setLojistas([]))
+      .catch(() => setLojistas([]));
 
-    // Se tem dados iniciais (edição), preenche o form
     if (initialData) {
       setForm({
         nome: initialData.nome || "",
@@ -84,59 +72,68 @@ export default function ProductForm({ onSave, initialData, onCancel }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validação básica
-    if (!form.nome.trim()) {
-      alert('Nome do produto é obrigatório');
-      return;
-    }
-    if (!form.categoria.trim()) {
-      alert('Categoria é obrigatória');
-      return;
-    }
-    if (form.preco <= 0) {
-      alert('Preço deve ser maior que zero');
-      return;
-    }
-    if (form.lojistaId === 0) {
-      alert('Selecione um lojista');
-      return;
-    }
-
+    if (!form.nome.trim()) return alert("Nome do produto é obrigatório");
+    if (!form.categoria.trim()) return alert("Categoria é obrigatória");
+    if (form.preco <= 0) return alert("Preço deve ser maior que zero");
+    if (form.lojistaId === 0) return alert("Selecione um lojista");
     onSave(form);
   };
 
+  // Tamanhos
   const adicionarTamanho = () => {
     if (novoTamanho.trim() && !form.tamanhos.includes(novoTamanho.trim())) {
       setForm({ ...form, tamanhos: [...form.tamanhos, novoTamanho.trim()] });
       setNovoTamanho("");
     }
   };
+  const removerTamanho = (t: string) =>
+    setForm({ ...form, tamanhos: form.tamanhos.filter(x => x !== t) });
 
-  const removerTamanho = (tamanho: string) => {
-    setForm({ ...form, tamanhos: form.tamanhos.filter(t => t !== tamanho) });
-  };
-
+  // Cores
   const adicionarCor = () => {
     if (novaCor.trim() && !form.cores.includes(novaCor.trim())) {
       setForm({ ...form, cores: [...form.cores, novaCor.trim()] });
       setNovaCor("");
     }
   };
+  const removerCor = (c: string) =>
+    setForm({ ...form, cores: form.cores.filter(x => x !== c) });
 
-  const removerCor = (cor: string) => {
-    setForm({ ...form, cores: form.cores.filter(c => c !== cor) });
-  };
+  const removerImagem = (url: string) =>
+    setForm({ ...form, imagens: form.imagens.filter(i => i !== url) });
 
-  const adicionarImagem = () => {
-    if (novaImagem.trim() && !form.imagens.includes(novaImagem.trim())) {
-      setForm({ ...form, imagens: [...form.imagens, novaImagem.trim()] });
-      setNovaImagem("");
+  // Upload Cloudinary (hardcoded — modo teste)
+  async function uploadToCloudinary(file: File) {
+    const CLOUD_NAME = "de9sttddj"; // seu cloud name
+    const UPLOAD_PRESET = "vitrine"; // nome do preset unsigned
+
+    const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    setUploading(true);
+    try {
+      const res = await fetch(url, { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.secure_url) {
+        setForm(prev => ({ ...prev, imagens: [...prev.imagens, data.secure_url] }));
+      } else {
+        alert("Erro ao enviar imagem: resposta inválida");
+        console.error("Cloudinary error:", data);
+      }
+    } catch (err) {
+      console.error("Erro no upload:", err);
+      alert("Erro ao enviar imagem");
+    } finally {
+      setUploading(false);
     }
-  };
+  }
 
-  const removerImagem = (imagem: string) => {
-    setForm({ ...form, imagens: form.imagens.filter(i => i !== imagem) });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.length) {
+      uploadToCloudinary(e.target.files[0]);
+    }
   };
 
   return (
@@ -340,25 +337,19 @@ export default function ProductForm({ onSave, initialData, onCancel }: Props) {
         {/* Imagens */}
         <div className="border-b border-gray-700 pb-4">
           <h4 className="text-lg font-semibold mb-3 text-destaque">Imagens do Produto</h4>
-          
-          <div className="flex gap-2 mb-3">
+
+          {/* Upload via Cloudinary */}
+          <div className="flex gap-2 mb-3 items-center">
             <input
-              type="url"
-              value={novaImagem}
-              onChange={(e) => setNovaImagem(e.target.value)}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
               className="flex-1 p-2 rounded bg-gray-800 text-white border border-gray-600"
-              placeholder="URL da imagem (https://...)"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), adicionarImagem())}
             />
-            <button
-              type="button"
-              onClick={adicionarImagem}
-              className="bg-destaque text-black px-4 py-2 rounded hover:opacity-80"
-            >
-              Adicionar
-            </button>
+            {uploading && <span className="text-sm text-gray-400">Enviando...</span>}
           </div>
 
+          {/* Preview das imagens */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {form.imagens.map((imagem, index) => (
               <div key={index} className="relative">
@@ -367,7 +358,8 @@ export default function ProductForm({ onSave, initialData, onCancel }: Props) {
                   alt={`Produto ${index + 1}`}
                   className="w-full h-24 object-cover rounded border border-gray-600"
                   onError={(e) => {
-                    e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjNDc0NzQ3Ii8+Cjx0ZXh0IHg9IjEyIiB5PSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0ZGRiIgZm9udC1zaXplPSIxMCI+Pz88L3RleHQ+Cjwvc3ZnPgo=';
+                    e.currentTarget.src =
+                      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9IiM0NzQ3NDciLz48dGV4dCB4PSIxMiIgeT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNGRkYiIGZvbnQtc2l6ZT0iMTAiPz88L3RleHQ+PC9zdmc+";
                   }}
                 />
                 <button
@@ -412,7 +404,7 @@ export default function ProductForm({ onSave, initialData, onCancel }: Props) {
             >
               Cancelar
             </button>
-            )}
+          )}
         </div>
       </form>
     </div>
