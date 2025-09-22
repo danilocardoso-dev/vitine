@@ -36,7 +36,7 @@ export default function CheckoutForm({ onSubmit }: Props) {
       <input name="estado" placeholder="Estado" onChange={handleChange} className="input" required />
       <input name="cep" placeholder="CEP" onChange={handleChange} className="input" required />
       <textarea name="observacoes" placeholder="Observações" onChange={handleChange} className="input" />
-      <button type="submit" className="btn w-full">Continuar para Pagamento</button>
+      <button type="submit" className="btn w-full">Finalizar Pedido</button>
     </form>
   );
 }

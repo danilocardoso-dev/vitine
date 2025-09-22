@@ -159,7 +159,6 @@ export default function PedidoModal({ pedido, onClose, onStatusChange }: Props) 
                         {item.tamanho && <p>Tamanho: {item.tamanho}</p>}
                         {item.cor && <p>Cor: {item.cor}</p>}
                         <p>Preço unitário: R$ {formatPrice(item.precoUnit)}</p>
-                        <p>Tamanho: {item.tamanho || "N/A"}</p>
                         <p>Cor: {item.cor || "N/A"}</p>
                       </div>
                     </div>
